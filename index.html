@@ -1,0 +1,2025 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>School Management System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body, html {
+            height: 100%;
+            overflow: hidden;
+        }
+   
+        header {
+            background: #2c3e50;
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo img {
+            height: 100px;
+            margin-right: 50px;
+        }
+        
+        /* Login Page */
+        .login-container {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        }
+        .login-box {
+            background: white;
+            width: 90%;
+            max-width: 500px;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .login-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .login-header i {
+            font-size: 50px;
+            color: #4a6bff;
+            margin-bottom: 15px;
+        }
+        .login-option {
+            display: none;
+        }
+        .login-option.active {
+            display: block;
+        }
+        .login-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .login-tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+        }
+        .login-tab.active {
+            border-bottom: 3px solid #4a6bff;
+            font-weight: bold;
+        }
+        .login-tab i {
+            margin-right: 8px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: #4a6bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .error {
+            color: #e74c3c;
+            margin-top: 15px;
+            text-align: center;
+        }
+        
+        /* Dashboard Styles */
+        .dashboard {
+            height: 100vh;
+            width: 100vw;
+            display: none;
+            flex-direction: column;
+            background: #f5f7fa;
+        }
+        .header {
+            background: #4a6bff;
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .header h2 {
+            font-weight: 500;
+        }
+        .content {
+            flex: 1;
+            overflow: auto;
+            padding: 20px;
+        }
+        .logout-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        
+        /* Excel-like Spreadsheet */
+        .excel-container {
+            width: 100%;
+            height: calc(100vh - 180px);
+            overflow: auto;
+            border: 1px solid #ddd;
+            background: white;
+        }
+        .excel-table {
+            border-collapse: collapse;
+            min-width: 100px;
+        }
+        .excel-table th, .excel-table td {
+            border: 1px solid #ddd;
+            padding: 5px 8px;
+            min-width: 100px;
+            height: 30px;
+            position: relative;
+        }
+        .excel-table th {
+            background-color: #f2f2f2;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .excel-table td input {
+            width: 100%;
+            height: 100%;
+            border: none;
+            padding: 5px;
+        }
+        .excel-table td input:focus {
+            outline: 2px solid #4a6bff;
+        }
+        .student-name-col {
+            min-width: 150px;
+            position: sticky;
+            left: 0;
+            background: white;
+            z-index: 5;
+        }
+        .excel-toolbar {
+            padding: 10px;
+            background: #f5f5f5;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            gap: 10px;
+        }
+        .excel-toolbar button {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        #saveAllBtn {
+            background: #4CAF50;
+            color: white;
+            transition: all 0.3s;
+        }
+        #saveAllBtn:hover {
+            background: #3e8e41;
+            transform: scale(1.05);
+        }
+        #saveAllBtn:active {
+            background: #2d6a2f;
+        }
+        #autoSaveStatus {
+            margin-left: 10px;
+            color: #666;
+            display: flex;
+            align-items: center;
+        }
+        #autoSaveStatus i {
+            margin-right: 5px;
+            color: #4a6bff;
+        }
+        
+        /* Admin Management */
+        .admin-toolbar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .admin-toolbar button {
+            padding: 8px 15px;
+            background: #4a6bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .admin-table th, .admin-table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        .admin-table th {
+            background-color: #f2f2f2;
+        }
+        .top-students {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .top-students h3 {
+            margin-bottom: 10px;
+            color: #4a6bff;
+        }
+        .top-students table {
+            width: 100%;
+        }
+        .top-students th {
+            background: #f5f7fa;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            width: 90%;
+            max-width: 500px;
+        }
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .hidden {
+            display: none;
+        }
+        
+        /* Save Confirmation */
+        .save-confirmation {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            z-index: 1000;
+            animation: fadeInOut 2s ease-in-out;
+        }
+        
+        @keyframes fadeInOut {
+            0% { opacity: 0; }
+            20% { opacity: 1; }
+            80% { opacity: 1; }
+            100% { opacity: 0; }
+        }
+        
+        /* Change Password */
+        .change-password-btn {
+            background: #ff9800 !important;
+            margin-left: auto;
+        }
+        
+        /* Admin Tabs */
+        .admin-tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 15px;
+        }
+        .admin-tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+        }
+        .admin-tab.active {
+            border-bottom: 3px solid #4a6bff;
+            font-weight: bold;
+        }
+        
+        /* Student Profile */
+        .student-profile {
+            display: flex;
+            margin-bottom: 20px;
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .student-photo {
+            width: 150px;
+            height: 150px;
+            border-radius: 5px;
+            object-fit: cover;
+            margin-right: 20px;
+            border: 1px solid #ddd;
+        }
+        .student-info {
+            flex: 1;
+        }
+        .student-info h3 {
+            margin-bottom: 10px;
+            color: #4a6bff;
+        }
+        .student-info p {
+            margin-bottom: 5px;
+        }
+        .semester-tabs {
+            display: flex;
+            margin-bottom: 15px;
+        }
+        .semester-tab {
+            padding: 8px 15px;
+            cursor: pointer;
+            background: #f5f5f5;
+            margin-right: 5px;
+            border-radius: 3px;
+        }
+        .semester-tab.active {
+            background: #4a6bff;
+            color: white;
+        }
+        .upload-btn {
+            background: #4a6bff;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .download-btn {
+            background: #4CAF50;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            margin-left: 10px;
+        }
+        .promote-btn {
+            background: #ff9800;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        
+        /* Class Management */
+        .class-management {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .class-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .class-item {
+            padding: 8px 15px;
+            background: #f5f5f5;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .class-item.active {
+            background: #4a6bff;
+            color: white;
+        }
+        .add-class-form {
+            display: flex;
+            margin-top: 15px;
+        }
+        .add-class-form input {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 3px 0 0 3px;
+        }
+        .add-class-form button {
+            padding: 8px 15px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 0 3px 3px 0;
+            cursor: pointer;
+        }
+        
+        /* Submit Marks Button */
+        #submitMarksBtn {
+            background: #9c27b0;
+            color: white;
+        }
+        
+        /* Student Records */
+        .student-records {
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        .records-list {
+            margin-top: 15px;
+        }
+        .record-item {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+        }
+        .record-item:last-child {
+            border-bottom: none;
+        }
+        
+        /* Grade and Section Selection */
+        .grade-section {
+            display: flex;
+            gap: 10px;
+        }
+        .grade-section select {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+   
+<header>
+    <a href="logo profile.html">
+        <div class="logo">
+            <img src="./test 33.jpg" alt="the Gienus"/>
+        </div>
+    </a>
+    <h1>May Maagel secondary school</h1>
+</header>
+
+<!-- Login Page -->
+<div id="loginPage" class="login-container">
+    <div class="login-box">
+        <div class="login-header">
+            <i class="fas fa-graduation-cap"></i>
+            <h2>School Management System</h2>
+        </div>
+        
+        <div class="login-tabs">
+            <div class="login-tab active" onclick="showLoginTab('student')">
+                <i class="fas fa-user-graduate"></i> Student
+            </div>
+            <div class="login-tab" onclick="showLoginTab('teacher')">
+                <i class="fas fa-chalkboard-teacher"></i> Teacher
+            </div>
+            <div class="login-tab" onclick="showLoginTab('admin')">
+                <i class="fas fa-user-shield"></i> Admin
+            </div>
+        </div>
+        
+        <!-- Student Login -->
+        <div id="studentLogin" class="login-option active">
+            <div class="form-group">
+                <label for="username"><i class="fas fa-user"></i> Username</label>
+                <input type="text" id="username" placeholder="Enter username">
+            </div>
+            <div class="form-group">
+                <label for="password"><i class="fas fa-lock"></i> Password</label>
+                <input type="password" id="password" placeholder="Enter password">
+            </div>
+            <button class="login-btn" onclick="login('student')">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </button>
+            <p id="studentError" class="error"></p>
+        </div>
+        
+        <!-- Teacher Login -->
+        <div id="teacherLogin" class="login-option">
+            <div class="form-group">
+                <label for="teacherUser"><i class="fas fa-user"></i> Username</label>
+                <input type="text" id="teacherUser" placeholder="Teacher username">
+            </div>
+            <div class="form-group">
+                <label for="teacherPass"><i class="fas fa-lock"></i> Password</label>
+                <input type="password" id="teacherPass" placeholder="Teacher password">
+            </div>
+            <button class="login-btn" onclick="login('teacher')">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </button>
+            <p id="teacherError" class="error"></p>
+        </div>
+        
+        <!-- Admin Login -->
+        <div id="adminLogin" class="login-option">
+            <div class="form-group">
+                <label for="adminUser"><i class="fas fa-user"></i> Username</label>
+                <input type="text" id="adminUser" placeholder="Admin username">
+            </div>
+            <div class="form-group">
+                <label for="adminPass"><i class="fas fa-lock"></i> Password</label>
+                <input type="password" id="adminPass" placeholder="Admin password">
+            </div>
+            <button class="login-btn" onclick="login('admin')">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </button>
+            <p id="adminError" class="error"></p>
+        </div>
+    </div>
+</div>
+
+<!-- Student Dashboard -->
+<div id="studentDashboard" class="dashboard">
+    <div class="header">
+        <h2><i class="fas fa-user-graduate"></i> Student Dashboard</h2>
+        <button class="logout-btn" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+    </div>
+    <div class="content">
+        <h3>Welcome, <span id="studentName"></span></h3>
+        <p>Class: <span id="studentClass"></span></p>
+        
+        <div class="semester-tabs">
+            <div class="semester-tab active" onclick="showSemesterResults('semester1')">Semester 1</div>
+            <div class="semester-tab" onclick="showSemesterResults('semester2')">Semester 2</div>
+        </div>
+        
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Subject</th>
+                    <th>Score</th>
+                    <th>Grade</th>
+                </tr>
+            </thead>
+            <tbody id="studentResults">
+                <!-- Filled dynamically -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Teacher Dashboard -->
+<div id="teacherDashboard" class="dashboard">
+    <div class="header">
+        <h2><i class="fas fa-chalkboard-teacher"></i> Teacher Gradebook</h2>
+        <button class="logout-btn" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
+    </div>
+    <div class="content">
+        <div class="excel-toolbar">
+            <button onclick="addSubject()">
+                <i class="fas fa-plus"></i> Add Subject
+            </button>
+            <button onclick="saveAllData()" id="saveAllBtn">
+                <i class="fas fa-save"></i> Save All Changes
+            </button>
+            <button onclick="submitMarks()" id="submitMarksBtn">
+                <i class="fas fa-paper-plane"></i> Submit Marks to Admin
+            </button>
+            <div id="autoSaveStatus">
+                <i class="fas fa-sync-alt"></i> Auto-save enabled
+            </div>
+        </div>
+        <div class="excel-container">
+            <table class="excel-table" id="gradebook">
+                <!-- Filled dynamically -->
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Admin Dashboard -->
+<div id="adminDashboard" class="dashboard">
+    <div class="header">
+        <h2><i class="fas fa-user-shield"></i> Admin Dashboard</h2>
+        <div>
+            <button class="change-password-btn" onclick="showChangePasswordModal()">
+                <i class="fas fa-key"></i> Change Password
+            </button>
+            <button class="logout-btn" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+    </div>
+    <div class="content">
+        <div class="admin-tabs">
+            <div class="admin-tab active" onclick="showAdminTab('students')">Students</div>
+            <div class="admin-tab" onclick="showAdminTab('teachers')">Teachers</div>
+            <div class="admin-tab" onclick="showAdminTab('classes')">Class Management</div>
+            <div class="admin-tab" onclick="showAdminTab('records')">Student Records</div>
+        </div>
+        
+        <div id="studentsTab" class="admin-tab-content">
+            <!-- Top Students Section -->
+            <div class="top-students">
+                <h3><i class="fas fa-trophy"></i> Top 5 Students by Average</h3>
+                <table id="topStudentsTable">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Name</th>
+                            <th>Class</th>
+                            <th>Average</th>
+                        </tr>
+                    </thead>
+                    <tbody id="topStudentsBody">
+                        <!-- Filled dynamically -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="admin-toolbar">
+                <button onclick="showAddStudentModal()">
+                    <i class="fas fa-user-plus"></i> Add Student
+                </button>
+                <input type="text" id="adminSearch" placeholder="Search by name or username..." 
+                       style="flex:1; padding: 8px; border: 1px solid #ddd; border-radius: 5px;">
+            </div>
+            
+            <div style="overflow: auto; height: calc(100vh - 380px);">
+                <table class="admin-table" id="adminTable">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Name</th>
+                            <th>Class</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminTableBody">
+                        <!-- Filled dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div id="teachersTab" class="admin-tab-content hidden">
+            <div class="admin-toolbar">
+                <button onclick="showAddTeacherModal()">
+                    <i class="fas fa-user-plus"></i> Add Teacher
+                </button>
+                <input type="text" id="teacherSearch" placeholder="Search by name or username..." 
+                       style="flex:1; padding: 8px; border: 1px solid #ddd; border-radius: 5px;">
+            </div>
+            
+            <div style="overflow: auto; height: calc(100vh - 380px);">
+                <table class="admin-table" id="teacherTable">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Name</th>
+                            <th>Class</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="teacherTableBody">
+                        <!-- Filled dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div id="classesTab" class="admin-tab-content hidden">
+            <div class="class-management">
+                <h3><i class="fas fa-chalkboard"></i> Class Management</h3>
+                <div class="add-class-form">
+                    <input type="text" id="newClassName" placeholder="Enter new class name (e.g., Grade 9)">
+                    <button onclick="addNewClass()">Add Class</button>
+                </div>
+                
+                <div class="class-list" id="classList">
+                    <!-- Filled dynamically -->
+                </div>
+            </div>
+        </div>
+        
+        <div id="recordsTab" class="admin-tab-content hidden">
+            <div class="student-records">
+                <h3><i class="fas fa-file-pdf"></i> Student Academic Records</h3>
+                <input type="text" id="recordSearch" placeholder="Search student records..." 
+                       style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 5px; margin-bottom: 15px;">
+                
+                <div class="records-list" id="recordsList">
+                    <!-- Filled dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Student Profile Modal -->
+<div id="studentProfileModal" class="modal">
+    <div class="modal-content" style="max-width: 800px;">
+        <h3>Student Profile</h3>
+        <div class="student-profile">
+            <img id="studentProfilePhoto" src="" alt="Student Photo" class="student-photo">
+            <div class="student-info">
+                <h3 id="profileStudentName"></h3>
+                <p>Username: <span id="profileUsername"></span></p>
+                <p>Class: <span id="profileClass"></span></p>
+                <p>Academic Year: <span id="profileYear"></span></p>
+                <input type="file" id="studentPhotoUpload" accept="image/*" style="display: none;">
+                <button class="upload-btn" onclick="document.getElementById('studentPhotoUpload').click()">
+                    <i class="fas fa-upload"></i> Upload Photo
+                </button>
+                <button class="download-btn" onclick="downloadCurrentStudentProfile()">
+                    <i class="fas fa-download"></i> Download Current PDF
+                </button>
+                <button class="promote-btn" onclick="promoteStudent()">
+                    <i class="fas fa-arrow-up"></i> Promote to Next Class
+                </button>
+            </div>
+        </div>
+        
+        <div class="semester-tabs">
+            <div class="semester-tab active" onclick="showProfileSemester('semester1')">Semester 1</div>
+            <div class="semester-tab" onclick="showProfileSemester('semester2')">Semester 2</div>
+        </div>
+        
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Subject</th>
+                    <th>Score</th>
+                    <th>Grade</th>
+                </tr>
+            </thead>
+            <tbody id="profileResults">
+                <!-- Filled dynamically -->
+            </tbody>
+        </table>
+        
+        <div class="student-records" style="margin-top: 20px;">
+            <h4><i class="fas fa-file-archive"></i> Academic History</h4>
+            <div class="records-list" id="studentHistoryList">
+                <!-- Filled dynamically -->
+            </div>
+        </div>
+        
+        <div class="modal-buttons">
+            <button onclick="hideModal()">Close</button>
+        </div>
+    </div>
+</div>
+
+<!-- Add Student Modal -->
+<div id="addStudentModal" class="modal">
+    <div class="modal-content">
+        <h3>Add New Student</h3>
+        <div class="form-group">
+            <label>Username</label>
+            <input type="text" id="newStudentUsername" class="form-control">
+        </div>
+        <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" id="newStudentName" class="form-control">
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="newStudentPassword" class="form-control">
+        </div>
+        <div class="form-group">
+            <label>Class</label>
+            <div class="grade-section">
+                <select id="newStudentGrade" class="form-control">
+                    <option value="Grade 9">Grade 9</option>
+                    <option value="Grade 10">Grade 10</option>
+                    <option value="Grade 11">Grade 11</option>
+                    <option value="Grade 12">Grade 12</option>
+                </select>
+                <select id="newStudentSection" class="form-control">
+                    <option value="A">Section A</option>
+                    <option value="B">Section B</option>
+                    <option value="C">Section C</option>
+                    <option value="D">Section D</option>
+                    <option value="E">Section E</option>
+                    <option value="F">Section F</option>
+                    <option value="G">Section G</option>
+                    <option value="H">Section H</option>
+                </select>
+            </div>
+        </div>
+        <div class="modal-buttons">
+            <button onclick="hideModal()">Cancel</button>
+            <button onclick="addNewStudent()" style="background: #4CAF50;">Add Student</button>
+        </div>
+    </div>
+</div>
+
+<!-- Add Teacher Modal -->
+<div id="addTeacherModal" class="modal">
+    <div class="modal-content">
+        <h3>Add New Teacher</h3>
+        <div class="form-group">
+            <label>Username</label>
+            <input type="text" id="newTeacherUsername" class="form-control">
+        </div>
+        <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" id="newTeacherName" class="form-control">
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="newTeacherPassword" class="form-control">
+        </div>
+        <div class="form-group">
+            <label>Class</label>
+            <div class="grade-section">
+                <select id="newTeacherGrade" class="form-control">
+                    <option value="Grade 9">Grade 9</option>
+                    <option value="Grade 10">Grade 10</option>
+                    <option value="Grade 11">Grade 11</option>
+                    <option value="Grade 12">Grade 12</option>
+                </select>
+                <select id="newTeacherSection" class="form-control">
+                    <option value="A">Section A</option>
+                    <option value="B">Section B</option>
+                    <option value="C">Section C</option>
+                    <option value="D">Section D</option>
+                    <option value="E">Section E</option>
+                    <option value="F">Section F</option>
+                    <option value="G">Section G</option>
+                    <option value="H">Section H</option>
+                </select>
+            </div>
+        </div>
+        <div class="modal-buttons">
+            <button onclick="hideModal()">Cancel</button>
+            <button onclick="addNewTeacher()" style="background: #4CAF50;">Add Teacher</button>
+        </div>
+    </div>
+</div>
+
+<!-- Edit User Modal -->
+<div id="editUserModal" class="modal">
+    <div class="modal-content">
+        <h3>Edit User</h3>
+        <div class="form-group">
+            <label>Username</label>
+            <input type="text" id="editUsername" class="form-control" readonly>
+        </div>
+        <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" id="editName" class="form-control">
+        </div>
+        <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="editPassword" class="form-control">
+        </div>
+        <div class="form-group" id="editClassContainer">
+            <label>Class</label>
+            <div class="grade-section">
+                <select id="editGrade" class="form-control">
+                    <option value="Grade 9">Grade 9</option>
+                    <option value="Grade 10">Grade 10</option>
+                    <option value="Grade 11">Grade 11</option>
+                    <option value="Grade 12">Grade 12</option>
+                </select>
+                <select id="editSection" class="form-control">
+                    <option value="A">Section A</option>
+                    <option value="B">Section B</option>
+                    <option value="C">Section C</option>
+                    <option value="D">Section D</option>
+                    <option value="E">Section E</option>
+                    <option value="F">Section F</option>
+                    <option value="G">Section G</option>
+                    <option value="H">Section H</option>
+                </select>
+            </div>
+        </div>
+        <div class="modal-buttons">
+            <button onclick="hideModal()">Cancel</button>
+            <button onclick="saveEditedUser()" style="background: #4CAF50;">Save Changes</button>
+        </div>
+    </div>
+</div>
+
+<!-- Change Password Modal -->
+<div id="changePasswordModal" class="modal">
+    <div class="modal-content">
+        <h3>Change Your Password</h3>
+        <div class="form-group">
+            <label>Current Password</label>
+            <input type="password" id="currentPassword" class="form-control">
+        </div>
+        <div class="form-group">
+            <label>New Password</label>
+            <input type="password" id="newPassword" class="form-control">
+        </div>
+        <div class="form-group">
+            <label>Confirm New Password</label>
+            <input type="password" id="confirmPassword" class="form-control">
+        </div>
+        <div class="modal-buttons">
+            <button onclick="hideModal()">Cancel</button>
+            <button onclick="changeAdminPassword()" style="background: #4CAF50;">Change Password</button>
+        </div>
+        <p id="passwordError" class="error" style="margin-top: 10px;"></p>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+// Initialize data storage
+if (!localStorage.getItem('schoolSubjects')) {
+    localStorage.setItem('schoolSubjects', JSON.stringify(["Math", "Science", "English"]));
+}
+
+if (!localStorage.getItem('schoolClasses')) {
+    localStorage.setItem('schoolClasses', JSON.stringify([
+        "Grade 9", "Grade 10", "Grade 11", "Grade 12"
+    ]));
+}
+
+// Load users from localStorage or use defaults
+let users = JSON.parse(localStorage.getItem('schoolUsers')) || {
+    // Admins
+    "dave": {
+        password: "506090",
+        name: "Dave",
+        type: "admin"
+    },
+    "sele": {
+        password: "406010",
+        name: "Sele",
+        type: "admin"
+    },
+    
+    // Teachers
+    "jhon": {
+        password: "334567",
+        name: "Jhon",
+        type: "teacher",
+        grade: "Grade 9",
+        section: "A",
+        class: "Grade 9A"
+    },
+    "kal": {
+        password: "123321",
+        name: "Kal",
+        type: "teacher",
+        grade: "Grade 10",
+        section: "B",
+        class: "Grade 10B"
+    },
+    
+    // Students
+    "muze": {
+        password: "040698",
+        name: "Muze",
+        type: "student",
+        grade: "Grade 9",
+        section: "A",
+        class: "Grade 9A",
+        photo: "",
+        academicYear: "2023-2024",
+        academicHistory: [],
+        grades: {
+            "semester1": {
+                "Math": 85,
+                "Science": 78,
+                "English": 92
+            },
+            "semester2": {
+                "Math": 88,
+                "Science": 82,
+                "English": 94
+            }
+        }
+    },
+    "ab": {
+        password: "050506",
+        name: "Ab",
+        type: "student",
+        grade: "Grade 9",
+        section: "A",
+        class: "Grade 9A",
+        photo: "",
+        academicYear: "2023-2024",
+        academicHistory: [],
+        grades: {
+            "semester1": {
+                "Math": 72,
+                "Science": 65,
+                "English": 81
+            },
+            "semester2": {
+                "Math": 75,
+                "Science": 70,
+                "English": 85
+            }
+        }
+    },
+    "mahi": {
+        password: "221221",
+        name: "Mahi",
+        type: "student",
+        grade: "Grade 10",
+        section: "B",
+        class: "Grade 10B",
+        photo: "",
+        academicYear: "2023-2024",
+        academicHistory: [],
+        grades: {
+            "semester1": {
+                "Math": 90,
+                "Science": 85,
+                "English": 95
+            },
+            "semester2": {
+                "Math": 92,
+                "Science": 88,
+                "English": 96
+            }
+        }
+    },
+    "beti": {
+        password: "303030",
+        name: "Beti",
+        type: "student",
+        grade: "Grade 10",
+        section: "B",
+        class: "Grade 10B",
+        photo: "",
+        academicYear: "2023-2024",
+        academicHistory: [],
+        grades: {
+            "semester1": {
+                "Math": 68,
+                "Science": 72,
+                "English": 75
+            },
+            "semester2": {
+                "Math": 70,
+                "Science": 75,
+                "English": 78
+            }
+        }
+    }
+};
+
+let subjects = JSON.parse(localStorage.getItem('schoolSubjects'));
+let classes = JSON.parse(localStorage.getItem('schoolClasses'));
+const sections = ["A", "B", "C", "D", "E", "F", "G", "H"];
+let currentUser = null;
+let currentEditingUser = null;
+let currentViewingStudent = null;
+let currentSemester = 'semester1';
+let currentProfileSemester = 'semester1';
+    
+// Initialize the application
+window.onload = function() {
+    // Initialize class dropdowns
+    updateClassList();
+    
+    // Set up event listeners
+    document.getElementById('adminSearch').addEventListener('input', function() {
+        updateAdminTable(this.value);
+    });
+    
+    document.getElementById('teacherSearch').addEventListener('input', function() {
+        updateTeacherTable(this.value);
+    });
+    
+    document.getElementById('recordSearch').addEventListener('input', function() {
+        updateRecordsTable(this.value);
+    });
+    
+    document.getElementById('studentPhotoUpload').addEventListener('change', function(e) {
+        uploadStudentPhoto(e);
+    });
+    
+    // Initialize the first view
+    showLoginTab('student');
+};
+
+// Data persistence functions
+function saveAllData() {
+    localStorage.setItem('schoolUsers', JSON.stringify(users));
+    localStorage.setItem('schoolSubjects', JSON.stringify(subjects));
+    localStorage.setItem('schoolClasses', JSON.stringify(classes));
+    showSaveConfirmation();
+    
+    // Update views whenever data is saved
+    if (document.getElementById('adminDashboard').style.display === 'flex') {
+        updateTopStudents();
+        updateAdminTable();
+        updateTeacherTable();
+        updateRecordsTable();
+    }
+}
+
+function showSaveConfirmation() {
+    const confirm = document.createElement('div');
+    confirm.className = 'save-confirmation';
+    confirm.textContent = '✓ All changes saved!';
+    document.body.appendChild(confirm);
+    
+    setTimeout(() => {
+        document.body.removeChild(confirm);
+    }, 2000);
+}
+
+// Class Management
+function updateClassList() {
+    const classList = document.getElementById('classList');
+    classList.innerHTML = '';
+    
+    classes.forEach(className => {
+        const classItem = document.createElement('div');
+        classItem.className = 'class-item';
+        classItem.textContent = className;
+        classItem.onclick = function() {
+            document.querySelectorAll('.class-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            this.classList.add('active');
+        };
+        classList.appendChild(classItem);
+    });
+}
+
+function addNewClass() {
+    const className = document.getElementById('newClassName').value.trim();
+    if (!className) return;
+    
+    if (!classes.includes(className)) {
+        classes.push(className);
+        saveAllData();
+        updateClassList();
+        document.getElementById('newClassName').value = '';
+    } else {
+        alert('Class already exists!');
+    }
+}
+
+// New Feature: Show top students by average
+function updateTopStudents() {
+    const students = Object.values(users)
+        .filter(user => user.type === 'student')
+        .map(student => {
+            const grades1 = subjects.map(subject => student.grades?.semester1?.[subject] || 0);
+            const grades2 = subjects.map(subject => student.grades?.semester2?.[subject] || 0);
+            
+            const avg1 = grades1.length > 0 ? 
+                (grades1.reduce((a, b) => a + b, 0) / grades1.length) : 0;
+            const avg2 = grades2.length > 0 ? 
+                (grades2.reduce((a, b) => a + b, 0) / grades2.length) : 0;
+                
+            const average = ((avg1 + avg2) / 2).toFixed(2);
+            
+            return {
+                name: student.name,
+                class: student.class,
+                average: parseFloat(average)
+            };
+        })
+        .sort((a, b) => b.average - a.average)
+        .slice(0, 5); // Top 5 students
+    
+    const tableBody = document.getElementById('topStudentsBody');
+    tableBody.innerHTML = '';
+    
+    students.forEach((student, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${index + 1}</td>
+            <td>${student.name}</td>
+            <td>${student.class}</td>
+            <td>${student.average}</td>
+        `;
+        tableBody.appendChild(row);
+    });
+}
+
+// New Feature: Change admin password
+function showChangePasswordModal() {
+    document.getElementById('currentPassword').value = '';
+    document.getElementById('newPassword').value = '';
+    document.getElementById('confirmPassword').value = '';
+    document.getElementById('passwordError').textContent = '';
+    document.getElementById('changePasswordModal').style.display = 'flex';
+}
+
+function changeAdminPassword() {
+    const currentPass = document.getElementById('currentPassword').value;
+    const newPass = document.getElementById('newPassword').value;
+    const confirmPass = document.getElementById('confirmPassword').value;
+    const errorElement = document.getElementById('passwordError');
+    
+    errorElement.textContent = '';
+    
+    // Validate inputs
+    if (!currentPass || !newPass || !confirmPass) {
+        errorElement.textContent = "All fields are required!";
+        return;
+    }
+    
+    if (newPass !== confirmPass) {
+        errorElement.textContent = "New passwords don't match!";
+        return;
+    }
+    
+    if (users[currentUser].password !== currentPass) {
+        errorElement.textContent = "Current password is incorrect!";
+        return;
+    }
+    
+    // Change password
+    users[currentUser].password = newPass;
+    saveAllData();
+    hideModal();
+    alert("Password changed successfully!");
+}
+
+// Login Functions
+function showLoginTab(tab) {
+    document.querySelectorAll('.login-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.login-option').forEach(o => o.classList.remove('active'));
+    
+    document.querySelector(`.login-tab[onclick="showLoginTab('${tab}')"]`).classList.add('active');
+    document.getElementById(`${tab}Login`).classList.add('active');
+}
+
+function login(type) {
+    const usernameField = type === 'student' ? 'username' : 
+                         type === 'teacher' ? 'teacherUser' : 'adminUser';
+    const passwordField = type === 'student' ? 'password' : 
+                         type === 'teacher' ? 'teacherPass' : 'adminPass';
+    const errorField = type === 'student' ? 'studentError' : 
+                      type === 'teacher' ? 'teacherError' : 'adminError';
+    
+    const username = document.getElementById(usernameField).value.toLowerCase();
+    const password = document.getElementById(passwordField).value;
+    const errorElement = document.getElementById(errorField);
+    
+    errorElement.textContent = "";
+    
+    if (!users[username]) {
+        errorElement.textContent = "User not found!";
+        return;
+    }
+    
+    if (users[username].password !== password) {
+        errorElement.textContent = "Incorrect password!";
+        return;
+    }
+    
+    if (users[username].type !== type) {
+        errorElement.textContent = `This is not a ${type} account!`;
+        return;
+    }
+    
+    // Successful login
+    currentUser = username;
+    document.getElementById('loginPage').style.display = 'none';
+    
+    if (type === 'student') {
+        document.getElementById('studentDashboard').style.display = 'flex';
+        showStudentDashboard(username);
+    } else if (type === 'teacher') {
+        document.getElementById('teacherDashboard').style.display = 'flex';
+        showTeacherDashboard(username);
+    } else { // admin
+        document.getElementById('adminDashboard').style.display = 'flex';
+        showAdminDashboard(username);
+    }
+}
+
+// Student Dashboard
+function showStudentDashboard(username) {
+    const student = users[username];
+    document.getElementById('studentName').textContent = student.name;
+    document.getElementById('studentClass').textContent = student.class;
+    
+    showSemesterResults('semester1');
+}
+
+function showSemesterResults(semester) {
+    currentSemester = semester;
+    const student = users[currentUser];
+    const tableBody = document.getElementById('studentResults');
+    tableBody.innerHTML = "";
+    
+    // Update active semester tab
+    document.querySelectorAll('.semester-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    document.querySelector(`.semester-tab[onclick="showSemesterResults('${semester}')"]`).classList.add('active');
+    
+    if (student.grades && student.grades[semester]) {
+        for (const subject in student.grades[semester]) {
+            const grade = student.grades[semester][subject];
+            const letterGrade = calculateGrade(grade);
+            
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${subject}</td>
+                <td>${grade}</td>
+                <td>${letterGrade}</td>
+            `;
+            tableBody.appendChild(row);
+        }
+    }
+}
+
+// Teacher Dashboard
+function showTeacherDashboard(username) {
+    const teacher = users[username];
+    initGradebook(teacher.class);
+}
+
+function initGradebook(classNumber) {
+    const table = document.getElementById('gradebook');
+    table.innerHTML = '';
+    
+    // Create header row
+    const headerRow = table.insertRow();
+    const nameCell = headerRow.insertCell();
+    nameCell.textContent = "Student";
+    nameCell.className = "student-name-col";
+    
+    // Add subject columns (editable)
+    subjects.forEach((subject, colIndex) => {
+        const cell = headerRow.insertCell();
+        cell.contentEditable = true;
+        cell.textContent = subject;
+        cell.onblur = function() {
+            updateSubjectName(colIndex, this.textContent);
+        };
+    });
+    
+    // Add average and rank columns
+    headerRow.insertCell().textContent = "Average";
+    headerRow.insertCell().textContent = "Rank";
+    
+    // Get students in this class, sorted alphabetically
+    const classStudents = Object.entries(users)
+        .filter(([_, user]) => user.type === 'student' && user.class === classNumber)
+        .sort((a, b) => a[1].name.localeCompare(b[1].name));
+    
+    // Add 70 rows (or actual student count if less)
+    const rowCount = Math.max(70, classStudents.length);
+    for (let rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+        const row = table.insertRow();
+        
+        // Student name column (sticky)
+        const nameCell = row.insertCell();
+        nameCell.className = "student-name-col";
+        
+        if (rowIndex < classStudents.length) {
+            const [username, student] = classStudents[rowIndex];
+            nameCell.textContent = student.name;
+            
+            // Add grade cells for each subject
+            subjects.forEach(subject => {
+                const cell = row.insertCell();
+                const value = student.grades?.semester1?.[subject] || '';
+                cell.innerHTML = `<input type="number" value="${value}" 
+                                    onchange="updateGrade('${username}', '${subject}', this.value)">`;
+            });
+            
+            // Calculate average
+            const grades = subjects.map(subject => student.grades?.semester1?.[subject] || 0);
+            const average = grades.length > 0 ? 
+                (grades.reduce((a, b) => a + b, 0) / grades.length).toFixed(2) : 0;
+            
+            // Average cell (readonly)
+            const avgCell = row.insertCell();
+            avgCell.textContent = average;
+            avgCell.dataset.average = average;
+            
+            // Rank cell (will be calculated after all averages are set)
+            row.insertCell().textContent = '';
+        } else {
+            // Empty row
+            subjects.forEach(() => row.insertCell().innerHTML = '<input type="number">');
+            row.insertCell().textContent = ''; // Average
+            row.insertCell().textContent = ''; // Rank
+        }
+    }
+    
+    // Calculate ranks after all averages are set
+    calculateRanks();
+}
+
+function updateSubjectName(index, newName) {
+    subjects[index] = newName;
+    saveAllData();
+}
+
+function updateGrade(username, subject, value) {
+    if (!users[username].grades) users[username].grades = {};
+    if (!users[username].grades.semester1) users[username].grades.semester1 = {};
+    users[username].grades.semester1[subject] = parseInt(value) || 0;
+    saveAllData();
+    initGradebook(users[username].class);
+}
+
+function calculateRanks() {
+    const table = document.getElementById('gradebook');
+    const rows = Array.from(table.rows).slice(1); // Skip header
+    
+    // Get all averages with row index
+    const averages = rows.map((row, index) => ({
+        index,
+        average: parseFloat(row.cells[row.cells.length-2].dataset.average || 0)
+    })).filter(item => !isNaN(item.average));
+    
+    // Sort by average descending
+    averages.sort((a, b) => b.average - a.average);
+    
+    // Assign ranks (1 for highest average)
+    averages.forEach((item, rank) => {
+        rows[item.index].cells[rows[item.index].cells.length-1].textContent = rank + 1;
+    });
+}
+
+function addSubject() {
+    const newSubject = prompt("Enter new subject name:");
+    if (newSubject && !subjects.includes(newSubject)) {
+        subjects.push(newSubject);
+        saveAllData();
+        initGradebook(users[currentUser].class);
+    }
+}
+
+function submitMarks() {
+    if (confirm("Are you sure you want to submit these marks to the admin? This will finalize the grades for this semester.")) {
+        // In a real system, this would send the data to the server
+        alert("Marks submitted successfully to the admin!");
+    }
+}
+
+// Admin Dashboard
+function showAdminDashboard(username) {
+    showAdminTab('students');
+}
+
+function showAdminTab(tab) {
+    document.querySelectorAll('.admin-tab-content').forEach(content => {
+        content.classList.add('hidden');
+    });
+    document.querySelectorAll('.admin-tab').forEach(tabElement => {
+        tabElement.classList.remove('active');
+    });
+    
+    document.getElementById(`${tab}Tab`).classList.remove('hidden');
+    document.querySelector(`.admin-tab[onclick="showAdminTab('${tab}')"]`).classList.add('active');
+    
+    if (tab === 'students') {
+        updateAdminTable();
+        updateTopStudents();
+    } else if (tab === 'teachers') {
+        updateTeacherTable();
+    } else if (tab === 'records') {
+        updateRecordsTable();
+    }
+}
+
+function updateAdminTable(searchTerm = '') {
+    const tableBody = document.getElementById('adminTableBody');
+    tableBody.innerHTML = "";
+    
+    const search = searchTerm.toLowerCase().trim();
+    
+    Object.entries(users).forEach(([username, user]) => {
+        if (user.type !== 'student') return;
+        
+        if (search && !user.name.toLowerCase().includes(search) && 
+            !username.toLowerCase().includes(search)) {
+            return;
+        }
+        
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${username}</td>
+            <td>${user.name}</td>
+            <td>${user.class || '-'}</td>
+            <td>
+                <button onclick="showStudentProfile('${username}')">View Profile</button>
+                <button onclick="showEditUserModal('${username}')">Edit</button>
+                ${username !== currentUser ? 
+                    `<button onclick="deleteUser('${username}')" style="background: #e74c3c;">Delete</button>` : 
+                    ''}
+            </td>
+        `;
+        tableBody.appendChild(row);
+    });
+}
+
+function updateTeacherTable(searchTerm = '') {
+    const tableBody = document.getElementById('teacherTableBody');
+    tableBody.innerHTML = "";
+    
+    const search = searchTerm.toLowerCase().trim();
+    
+    Object.entries(users).forEach(([username, user]) => {
+        if (user.type !== 'teacher') return;
+        
+        if (search && !user.name.toLowerCase().includes(search) && 
+            !username.toLowerCase().includes(search)) {
+            return;
+        }
+        
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${username}</td>
+            <td>${user.name}</td>
+            <td>${user.class || '-'}</td>
+            <td>
+                <button onclick="showEditUserModal('${username}')">Edit</button>
+                ${username !== currentUser ? 
+                    `<button onclick="deleteUser('${username}')" style="background: #e74c3c;">Delete</button>` : 
+                    ''}
+            </td>
+        `;
+        tableBody.appendChild(row);
+    });
+}
+
+function updateRecordsTable(searchTerm = '') {
+    const recordsList = document.getElementById('recordsList');
+    recordsList.innerHTML = "";
+    
+    const search = searchTerm.toLowerCase().trim();
+    
+    Object.entries(users).forEach(([username, user]) => {
+        if (user.type !== 'student') return;
+        
+        if (search && !user.name.toLowerCase().includes(search) && 
+            !username.toLowerCase().includes(search)) {
+            return;
+        }
+        
+        const recordItem = document.createElement('div');
+        recordItem.className = 'record-item';
+        recordItem.innerHTML = `
+            <div>
+                <strong>${user.name}</strong> (${user.class}) - ${user.academicYear || '2023-2024'}
+            </div>
+            <button onclick="showStudentProfile('${username}')">View Profile</button>
+        `;
+        recordsList.appendChild(recordItem);
+    });
+}
+
+function showStudentProfile(username) {
+    const student = users[username];
+    currentViewingStudent = username;
+    
+    document.getElementById('profileStudentName').textContent = student.name;
+    document.getElementById('profileUsername').textContent = username;
+    document.getElementById('profileClass').textContent = student.class;
+    document.getElementById('profileYear').textContent = student.academicYear || '2023-2024';
+    
+    // Set photo if available
+    const photoElement = document.getElementById('studentProfilePhoto');
+    if (student.photo) {
+        photoElement.src = student.photo;
+    } else {
+        photoElement.src = 'https://via.placeholder.com/150';
+    }
+    
+    // Update academic history
+    updateStudentHistory();
+    
+    showProfileSemester('semester1');
+    document.getElementById('studentProfileModal').style.display = 'flex';
+}
+
+function updateStudentHistory() {
+    const student = users[currentViewingStudent];
+    const historyList = document.getElementById('studentHistoryList');
+    historyList.innerHTML = "";
+    
+    if (student.academicHistory && student.academicHistory.length > 0) {
+        student.academicHistory.forEach((record, index) => {
+            const recordItem = document.createElement('div');
+            recordItem.className = 'record-item';
+            recordItem.innerHTML = `
+                <div>
+                    <strong>${record.academicYear}</strong> - ${record.grade}
+                    <br>Final Average: ${record.finalAverage}
+                </div>
+                <button onclick="downloadStudentRecord('${currentViewingStudent}', ${index})">
+                    <i class="fas fa-download"></i> Download PDF
+                </button>
+            `;
+            historyList.appendChild(recordItem);
+        });
+    } else {
+        historyList.innerHTML = '<p>No academic history available yet.</p>';
+    }
+}
+
+function showProfileSemester(semester) {
+    currentProfileSemester = semester;
+    const student = users[currentViewingStudent];
+    const tableBody = document.getElementById('profileResults');
+    tableBody.innerHTML = "";
+    
+    // Update active semester tab
+    document.querySelectorAll('.semester-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    document.querySelector(`.semester-tab[onclick="showProfileSemester('${semester}')"]`).classList.add('active');
+    
+    if (student.grades && student.grades[semester]) {
+        for (const subject in student.grades[semester]) {
+            const grade = student.grades[semester][subject];
+            const letterGrade = calculateGrade(grade);
+            
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${subject}</td>
+                <td>${grade}</td>
+                <td>${letterGrade}</td>
+            `;
+            tableBody.appendChild(row);
+        }
+    }
+}
+
+function uploadStudentPhoto(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        users[currentViewingStudent].photo = e.target.result;
+        document.getElementById('studentProfilePhoto').src = e.target.result;
+        saveAllData();
+    };
+    reader.readAsDataURL(file);
+}
+
+function downloadCurrentStudentProfile() {
+    const student = users[currentViewingStudent];
+    generateStudentPDF(student, student.academicYear, student.grade);
+}
+
+function downloadStudentRecord(username, recordIndex) {
+    const student = users[username];
+    const record = student.academicHistory[recordIndex];
+    generateStudentPDF(student, record.academicYear, record.grade, true);
+}
+
+function generateStudentPDF(student, academicYear, grade, isHistorical = false) {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+    
+    // Add title
+    doc.setFontSize(18);
+    doc.text(`Student Profile: ${student.name}`, 105, 20, { align: 'center' });
+    
+    // Add student info
+    doc.setFontSize(12);
+    doc.text(`Class: ${grade}`, 20, 40);
+    doc.text(`Academic Year: ${academicYear}`, 20, 50);
+    
+    // Add photo if available
+    if (student.photo) {
+        doc.addImage(student.photo, 'JPEG', 140, 30, 50, 50);
+    }
+    
+    // Add semester 1 grades
+    doc.text('Semester 1 Results:', 20, 70);
+    let yPos = 80;
+    if (student.grades?.semester1 && !isHistorical) {
+        for (const subject in student.grades.semester1) {
+            const grade = student.grades.semester1[subject];
+            doc.text(`${subject}: ${grade} (${calculateGrade(grade)})`, 30, yPos);
+            yPos += 10;
+        }
+    } else if (isHistorical) {
+        doc.text('Data not available for historical records', 30, yPos);
+        yPos += 10;
+    }
+    
+    // Add semester 2 grades
+    doc.text('Semester 2 Results:', 20, yPos + 10);
+    yPos += 20;
+    if (student.grades?.semester2 && !isHistorical) {
+        for (const subject in student.grades.semester2) {
+            const grade = student.grades.semester2[subject];
+            doc.text(`${subject}: ${grade} (${calculateGrade(grade)})`, 30, yPos);
+            yPos += 10;
+        }
+    } else if (isHistorical) {
+        doc.text('Data not available for historical records', 30, yPos);
+        yPos += 10;
+    }
+    
+    // Save the PDF with appropriate name
+    const fileName = isHistorical ? 
+        `${student.name}_${grade}_${academicYear}.pdf` :
+        `${student.name}_${grade}_Current.pdf`;
+    
+    doc.save(fileName);
+}
+
+function promoteStudent() {
+    const student = users[currentViewingStudent];
+    const currentGrade = student.grade;
+    
+    if (!currentGrade || !currentGrade.includes('Grade')) {
+        alert('Cannot determine current grade level!');
+        return;
+    }
+    
+    const gradeNumber = parseInt(currentGrade.replace('Grade ', ''));
+    if (gradeNumber >= 12) {
+        alert('Student is already in the highest grade (Grade 12)!');
+        return;
+    }
+    
+    if (confirm(`Promote ${student.name} from ${currentGrade} to Grade ${gradeNumber + 1}?`)) {
+        // Calculate final average for the academic year
+        const grades1 = subjects.map(subject => student.grades?.semester1?.[subject] || 0);
+        const grades2 = subjects.map(subject => student.grades?.semester2?.[subject] || 0);
+        
+        const avg1 = grades1.length > 0 ? 
+            (grades1.reduce((a, b) => a + b, 0) / grades1.length) : 0;
+        const avg2 = grades2.length > 0 ? 
+            (grades2.reduce((a, b) => a + b, 0) / grades2.length) : 0;
+            
+        const finalAverage = ((avg1 + avg2) / 2).toFixed(2);
+        
+        // Add to academic history
+        if (!student.academicHistory) {
+            student.academicHistory = [];
+        }
+        
+        student.academicHistory.push({
+            academicYear: student.academicYear,
+            grade: student.class,
+            finalAverage: finalAverage
+        });
+        
+        // Update student information
+        student.grade = `Grade ${gradeNumber + 1}`;
+        student.section = student.section || 'A'; // Keep same section by default
+        student.class = `${student.grade}${student.section}`;
+        student.academicYear = getNextAcademicYear(student.academicYear);
+        
+        // Reset grades for new academic year
+        student.grades = {
+            semester1: {},
+            semester2: {}
+        };
+        
+        saveAllData();
+        showStudentProfile(currentViewingStudent);
+        updateAdminTable();
+        alert(`${student.name} has been promoted to ${student.class} for ${student.academicYear}!`);
+    }
+}
+
+function getNextAcademicYear(currentYear) {
+    if (!currentYear || !currentYear.includes('-')) {
+        return '2024-2025'; // Default if format is invalid
+    }
+    
+    const [start, end] = currentYear.split('-').map(Number);
+    return `${start + 1}-${end + 1}`;
+}
+
+function showAddStudentModal() {
+    document.getElementById('newStudentUsername').value = '';
+    document.getElementById('newStudentName').value = '';
+    document.getElementById('newStudentPassword').value = '';
+    document.getElementById('newStudentGrade').value = 'Grade 9';
+    document.getElementById('newStudentSection').value = 'A';
+    document.getElementById('addStudentModal').style.display = 'flex';
+}
+
+function showAddTeacherModal() {
+    document.getElementById('newTeacherUsername').value = '';
+    document.getElementById('newTeacherName').value = '';
+    document.getElementById('newTeacherPassword').value = '';
+    document.getElementById('newTeacherGrade').value = 'Grade 9';
+    document.getElementById('newTeacherSection').value = 'A';
+    document.getElementById('addTeacherModal').style.display = 'flex';
+}
+
+function addNewStudent() {
+    const username = document.getElementById('newStudentUsername').value.toLowerCase();
+    const name = document.getElementById('newStudentName').value;
+    const password = document.getElementById('newStudentPassword').value;
+    const grade = document.getElementById('newStudentGrade').value;
+    const section = document.getElementById('newStudentSection').value;
+    const classVal = `${grade}${section}`;
+    
+    if (!username || !name || !password) {
+        alert("Please fill all fields!");
+        return;
+    }
+    
+    if (users[username]) {
+        alert("Username already exists!");
+        return;
+    }
+    
+    // Initialize with empty grades for all subjects
+    const grades = {
+        semester1: {},
+        semester2: {}
+    };
+    
+    users[username] = {
+        password,
+        name,
+        type: 'student',
+        grade,
+        section,
+        class: classVal,
+        academicYear: '2023-2024',
+        photo: '',
+        academicHistory: [],
+        grades
+    };
+    
+    saveAllData();
+    hideModal();
+    updateAdminTable();
+}
+
+function addNewTeacher() {
+    const username = document.getElementById('newTeacherUsername').value.toLowerCase();
+    const name = document.getElementById('newTeacherName').value;
+    const password = document.getElementById('newTeacherPassword').value;
+    const grade = document.getElementById('newTeacherGrade').value;
+    const section = document.getElementById('newTeacherSection').value;
+    const classVal = `${grade}${section}`;
+    
+    if (!username || !name || !password) {
+        alert("Please fill all fields!");
+        return;
+    }
+    
+    if (users[username]) {
+        alert("Username already exists!");
+        return;
+    }
+    
+    users[username] = {
+        password,
+        name,
+        type: 'teacher',
+        grade,
+        section,
+        class: classVal
+    };
+    
+    saveAllData();
+    hideModal();
+    updateTeacherTable();
+}
+
+function showEditUserModal(username) {
+    const user = users[username];
+    currentEditingUser = username;
+    
+    document.getElementById('editUsername').value = username;
+    document.getElementById('editName').value = user.name;
+    document.getElementById('editPassword').value = user.password;
+    
+    const classContainer = document.getElementById('editClassContainer');
+    const gradeSelect = document.getElementById('editGrade');
+    const sectionSelect = document.getElementById('editSection');
+    
+    if (user.type === 'student' || user.type === 'teacher') {
+        classContainer.style.display = 'block';
+        gradeSelect.value = user.grade || 'Grade 9';
+        sectionSelect.value = user.section || 'A';
+    } else {
+        classContainer.style.display = 'none';
+    }
+    
+    document.getElementById('editUserModal').style.display = 'flex';
+}
+
+function saveEditedUser() {
+    const username = currentEditingUser;
+    const name = document.getElementById('editName').value;
+    const password = document.getElementById('editPassword').value;
+    const grade = document.getElementById('editGrade').value;
+    const section = document.getElementById('editSection').value;
+    const classVal = `${grade}${section}`;
+    
+    users[username].name = name;
+    users[username].password = password;
+    
+    if (users[username].type === 'student' || users[username].type === 'teacher') {
+        users[username].grade = grade;
+        users[username].section = section;
+        users[username].class = classVal;
+    }
+    
+    saveAllData();
+    hideModal();
+    
+    if (users[username].type === 'student') {
+        updateAdminTable();
+    } else if (users[username].type === 'teacher') {
+        updateTeacherTable();
+    }
+}
+
+function deleteUser(username) {
+    if (confirm(`Are you sure you want to delete ${users[username].name}?`)) {
+        delete users[username];
+        saveAllData();
+        
+        if (users[currentUser]?.type === 'student') {
+            updateAdminTable();
+        } else if (users[currentUser]?.type === 'teacher') {
+            updateTeacherTable();
+        }
+    }
+}
+
+function hideModal() {
+    document.getElementById('addStudentModal').style.display = 'none';
+    document.getElementById('addTeacherModal').style.display = 'none';
+    document.getElementById('editUserModal').style.display = 'none';
+    document.getElementById('changePasswordModal').style.display = 'none';
+    document.getElementById('studentProfileModal').style.display = 'none';
+}
+
+// Helper functions
+function calculateGrade(score) {
+    if (score >= 90) return "A";
+    if (score >= 80) return "B";
+    if (score >= 70) return "C";
+    if (score >= 60) return "D";
+    return "F";
+}
+
+function logout() {
+    currentUser = null;
+    document.getElementById('loginPage').style.display = 'flex';
+    document.getElementById('studentDashboard').style.display = 'none';
+    document.getElementById('teacherDashboard').style.display = 'none';
+    document.getElementById('adminDashboard').style.display = 'none';
+    
+    // Reset login form
+    showLoginTab('student');
+    document.getElementById('username').value = '';
+    document.getElementById('password').value = '';
+    document.getElementById('teacherUser').value = '';
+    document.getElementById('teacherPass').value = '';
+    document.getElementById('adminUser').value = '';
+    document.getElementById('adminPass').value = '';
+    document.getElementById('studentError').textContent = '';
+    document.getElementById('teacherError').textContent = '';
+    document.getElementById('adminError').textContent = '';
+}
+</script>
+</body>
+</html>
